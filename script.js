@@ -1,62 +1,19 @@
-// Palette switching functionality
 document.addEventListener('DOMContentLoaded', function() {
-  const palette1Btn = document.getElementById('palette1');
-  const palette2Btn = document.getElementById('palette2');
-  const palette3Btn = document.getElementById('palette3');
-  const palette4Btn = document.getElementById('palette4');
-  const paletteButtons = [palette1Btn, palette2Btn, palette3Btn, palette4Btn].filter(Boolean);
-  const body = document.body;
 
-  // Load saved palette from localStorage
-  const savedPalette = localStorage.getItem('colorPalette') || 'palette1';
-  applyPalette(savedPalette);
-
-  // Palette 1: Gold & Purple
-  palette1Btn.addEventListener('click', function() {
-    applyPalette('palette1');
-  });
-
-  // Palette 2: Burnt Orange & Black
-  palette2Btn.addEventListener('click', function() {
-    applyPalette('palette2');
-  });
-
-  // Palette 3: Teal
-  if (palette3Btn) {
-    palette3Btn.addEventListener('click', function() {
-      applyPalette('palette3');
-    });
-  }
-
-  // Palette 4: Night Mode
-  if (palette4Btn) {
-    palette4Btn.addEventListener('click', function() {
-      applyPalette('palette4');
-    });
-  }
-
-  function applyPalette(paletteName) {
-    body.classList.remove('palette-2', 'palette-3', 'palette-4');
-
-    if (paletteName === 'palette2') {
-      body.classList.add('palette-2');
-      updateButtonStates(palette2Btn);
-    } else if (paletteName === 'palette3') {
-      body.classList.add('palette-3');
-      updateButtonStates(palette3Btn);
-    } else if (paletteName === 'palette4') {
-      body.classList.add('palette-4');
-      updateButtonStates(palette4Btn);
-    } else {
-      updateButtonStates(palette1Btn);
+  // Mark active nav link based on current page — delayed so drop-in transition plays
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  let activeLink = null;
+  document.querySelectorAll('.navbar__menu a, .navbar__item a').forEach(function(link) {
+    const linkPage = link.getAttribute('href').split('/').pop();
+    if (linkPage === currentPage) {
+      activeLink = link;
     }
-
-    localStorage.setItem('colorPalette', paletteName);
-  }
-
-  function updateButtonStates(activeBtn) {
-    paletteButtons.forEach(function(btn) {
-      btn.style.opacity = btn === activeBtn ? '1' : '0.5';
+  });
+  if (activeLink) {
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        activeLink.classList.add('nav--active');
+      });
     });
   }
 
@@ -102,4 +59,49 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+
+  // Contact form — EmailJS
+  // Fill in your three IDs from the EmailJS dashboard:
+  const EMAILJS_PUBLIC_KEY  = 'LC809u0278A1nNb9E';
+  const EMAILJS_SERVICE_ID  = 'PrivateEmail';
+  const EMAILJS_TEMPLATE_ID = 'template_x1ekivr';
+
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  }
+
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Honeypot check
+      if (contactForm.querySelector('[name="website"]')?.value) return;
+
+      const submitBtn  = contactForm.querySelector('.form-submit');
+      const successMsg = document.getElementById('formSuccess');
+      const originalText = submitBtn.querySelector('.form-submit__text').textContent;
+
+      submitBtn.disabled = true;
+      submitBtn.querySelector('.form-submit__text').textContent = 'Sending…';
+
+      const templateParams = {
+        from_name:  contactForm.querySelector('[name="name"]').value.trim(),
+        from_email: contactForm.querySelector('[name="email"]').value.trim(),
+        message:    contactForm.querySelector('[name="message"]').value.trim()
+      };
+
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+        .then(function() {
+          contactForm.reset();
+          successMsg.hidden = false;
+          submitBtn.querySelector('.form-submit__text').textContent = 'Sent!';
+        })
+        .catch(function() {
+          submitBtn.querySelector('.form-submit__text').textContent = originalText;
+          submitBtn.disabled = false;
+          alert('Something went wrong. Please try again or email us directly at info@joinnovativesolutions.com.');
+        });
+    });
+  }
 });
