@@ -105,3 +105,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// Mobile navbar toggle
+document.addEventListener("DOMContentLoaded", function () {
+  const toggle = document.querySelector(".navbar__toggle");
+  const menu = document.querySelector(".navbar__menu");
+
+  if (!toggle || !menu) return;
+
+  toggle.setAttribute("aria-expanded", "false");
+
+  toggle.addEventListener("click", function () {
+    const isOpen = menu.classList.toggle("is-open");
+    toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  });
+
+  menu.querySelectorAll("a").forEach(function (link) {
+    link.addEventListener("click", function () {
+      menu.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
+    });
+  });
+});
