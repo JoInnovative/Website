@@ -2112,3 +2112,45 @@ button {
   font-style: normal;
   line-height: 1.9;
 }
+/* ================================
+   MOBILE NAVBAR FIX
+   ================================ */
+
+.navbar--overlay {
+  z-index: 1000;
+}
+
+@media (max-width: 768px) {
+  .navbar__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    z-index: 1001;
+  }
+
+  .navbar__menu {
+    display: none;
+  }
+
+  .navbar__menu.is-open {
+    display: flex;
+    position: relative;
+    z-index: 1001;
+  }
+
+  .navbar--overlay .navbar__menu.is-open {
+    width: 100%;
+    background-color: rgba(13, 13, 25, 0.97);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 8px 16px 16px;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+  }
+
+  .navbar--overlay .navbar__menu.is-open .navbar__item a {
+    font-size: var(--font-size-base);
+    color: #ffffff;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    padding: 14px 4px;
+  }
+}
